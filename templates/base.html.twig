@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bibliothèque Musicale{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #121212;
+            color: white;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #1a1a1a;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+        }
+
+        .sidebar h2 {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            color: #fff;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ccc;
+            padding: 0.5rem 0;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            padding-left: 0.5rem;
+        }
+
+        .sidebar a:hover {
+            color: #fff;
+            background-color: #292929;
+            padding-left: 0.75rem;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 2rem;
+            padding-bottom: 100px; /* espace pour le lecteur */
+        }
+
+        footer.audio-player {
+            position: fixed;
+            bottom: 0;
+            left: 240px;
+            right: 0;
+            background: #1f1f1f;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ccc;
+            border-top: 1px solid #333;
+        }
+
+        footer.audio-player audio::-webkit-media-controls-panel {
+            background-color: #1f1f1f;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+        .btn:focus {
+            box-shadow: none;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            footer.audio-player {
+                left: 0;
+                padding: 0.75rem 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            footer.audio-player audio {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🎵 Bibliothèque</h2>
+        <a href="{{ path('home') }}"><i class="bi bi-house-door-fill me-2"></i>Accueil</a>
+        <a href="{{ path('app_artiste_index') }}"><i class="bi bi-people-fill me-2"></i>Artistes</a>
+        <a href="{{ path('app_release_index') }}"><i class="bi bi-disc-fill me-2"></i>Albums</a>
+        <a href="{{ path('app_track_index') }}"><i class="bi bi-music-note-list me-2"></i>Pistes</a>
+        <a href="{{ path('app_favoris') }}"><i class="bi bi-heart-fill me-2"></i>Favoris</a>
+
+        <hr style="border-color: #444;">
+
+        {% if app.user %}
+            <a href="{{ path('app_account') }}"><i class="bi bi-person-circle me-2"></i>Mon compte</a>
+            <form method="post" action="{{ path('app_logout') }}">
+                <button class="btn btn-sm btn-outline-light mt-2 w-100" type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="btn btn-outline-light w-100 mb-2">Login</a>
+            <a href="{{ path('app_signup') }}" class="btn btn-outline-info w-100">Inscription</a>
+        {% endif %}
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        {% block body %}{% endblock %}
+    </div>
+
+    <!-- Audio player -->
+    <footer class="audio-player">
+        <div>
+            🎶 En cours :
+            <strong>
+                {{ current_track is defined and current_track.title is defined ? current_track.title : 'Aucune piste' }}
+            </strong>
+        </div>
+
+        <audio controls>
+            {% if current_track is defined and current_track.file is defined %}
+                <source src="{{ asset('music/' ~ current_track.file) }}" type="audio/mpeg">
+            {% endif %}
+            Votre navigateur ne supporte pas l’audio.
+        </audio>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
